@@ -1,4 +1,4 @@
--module(khronos_sup).
+-module(khronos_monitor_sup).
 -behaviour(supervisor).
 
 %% API
@@ -21,19 +21,8 @@ start_link() ->
 %% Supervisor callbacks
 %% ===================================================================
 
-%% Hierarchy:
-%%
-%%       app
-%%        |
-%%       sup
-%%     /  |  \
-%%  api  data  monitor_sup
-%%             /     \
-%%      monitor_1   monitor_2
 init([]) ->
-  Api = ?CHILD(khronos_api, worker),
-  Data = ?CHILD(khronos_data, worker),
-  MonitorSup = ?CHILD(khronos_monitor_sup, supervisor),
+  ExampleMonitor = ?CHILD(khronos_monitor, worker),
 
-  {ok, { {one_for_one, 5, 60}, [Api, Data, MonitorSup]} }.
+  {ok, { {one_for_one, 5, 60}, [ExampleMonitor]} }.
 
