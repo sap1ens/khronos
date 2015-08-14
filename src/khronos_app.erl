@@ -10,7 +10,7 @@
 %% ===================================================================
 
 start(_StartType, _StartArgs) ->
-    khronos_sup:start_link().
+  khronos_sup:start_link().
 
 stop(_State) ->
-    ok.
+  ok.
