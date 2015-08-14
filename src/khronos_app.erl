@@ -1,5 +1,4 @@
 -module(khronos_app).
-
 -behaviour(application).
 
 %% Application callbacks
