@@ -9,7 +9,7 @@
 %% API Function Exports
 %% ------------------------------------------------------------------
 
--export([start_link/0, create_check/3, delete_check/1, get_check/1, get_all_checks/0]).
+-export([start_link/0, create_check/4, delete_check/1, get_check/1, get_all_checks/0]).
 
 %% ------------------------------------------------------------------
 %% gen_server Function Exports
@@ -24,8 +24,8 @@
 start_link() ->
   gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
 
-create_check(Id, Type, Interval) ->
-  NewCheck = #check{id = Id, type = Type, interval = Interval},
+create_check(Id, Type, Port, Interval) ->
+  NewCheck = #check{id = Id, type = Type, port = Port, interval = Interval},
   gen_server:call(?SERVER, {add, NewCheck}).
 
 delete_check(Id) ->
