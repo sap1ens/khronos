@@ -25,14 +25,17 @@ create_check(_) ->
   ?_assertMatch(#check{id = 1, type = tcp, port = 80, interval = 1000}, Check).
 
 delete_check(_) ->
-  khronos_data:create_check(2, tcp, 80, 1000),
-  khronos_data:create_check(3, udp, 8080, 5000),
-  {ok, Checks} = khronos_data:get_all_checks(),
+  CreateTwoChecks = fun() ->
+    khronos_data:create_check(2, tcp, 80, 1000),
+    khronos_data:create_check(3, udp, 8080, 5000),
+    {ok, Checks} = khronos_data:get_all_checks(),
+    Checks
+  end,
 
-  % FIXME: not really running
-  %?_assertEqual(2, length(Checks)),
+  DeleteOne = fun() ->
+    khronos_data:delete_check(3),
+    {ok, UpdatedChecks} = khronos_data:get_all_checks(),
+    UpdatedChecks
+  end,
 
-  khronos_data:delete_check(3),
-
-  {ok, UpdatedChecks} = khronos_data:get_all_checks(),
-  ?_assertEqual(1, length(UpdatedChecks)).
+  [?_assertEqual(2, length(CreateTwoChecks())), ?_assertEqual(1, length(DeleteOne()))].
