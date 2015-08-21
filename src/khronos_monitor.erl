@@ -32,7 +32,8 @@ stop() ->
 call_udp(TargetId) ->
   {ok, Target} = khronos_data:get_target(TargetId),
 
-  Result = case gen_udp:open(Target#target.port, [{ip, Target#target.address}]) of
+  {ok, IP} = inet:getaddr(Target#target.address, inet),
+  Result = case gen_udp:open(Target#target.port, [{ip, IP}]) of
     {ok, _} -> {ok};
     {error, Msg} -> {failed, Msg} %% Example: {error, eaddrnotavail}
   end,

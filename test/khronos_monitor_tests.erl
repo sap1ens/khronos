@@ -20,7 +20,7 @@ stop(_) ->
   khronos_monitor:stop().
 
 udp_call(_) ->
-  {ok, _} = khronos_data:create_target(1, udp, 8888, {54, 147, 211, 135}, 1000),
+  {ok, _} = khronos_data:create_target(1, udp, 8888, "google.com", 1000),
 
   khronos_monitor:call_udp(1),
 
