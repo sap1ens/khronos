@@ -9,7 +9,7 @@
 %% API Function Exports
 %% ------------------------------------------------------------------
 
--export([start_link/0, stop/0, create_check/4, delete_check/1, get_check/1, get_all_checks/0]).
+-export([start_link/0, stop/0, create_check/4, delete_check/1, get_check/1, get_all_checks/0, add_metric/3]).
 
 %% ------------------------------------------------------------------
 %% gen_server Function Exports
@@ -40,6 +40,15 @@ get_check(Id) ->
 get_all_checks() ->
   gen_server:call(?SERVER, {get_all}).
 
+add_metric(CheckId, Timestamp, Result) ->
+  {ok, Check} = get_check(CheckId),
+
+  ExistingMetrics = Check#check.metrics,
+  NewMetric = #metric{timestamp = Timestamp, result = Result},
+  NewCheck = Check#check{metrics = [NewMetric | ExistingMetrics]},
+
+  gen_server:call(?SERVER, {update, NewCheck}).
+
 %% ------------------------------------------------------------------
 %% gen_server Function Definitions
 %% ------------------------------------------------------------------
@@ -48,19 +57,24 @@ init(_) ->
   {ok, []}.
 
 handle_call({add, Check}, _From, State) ->
-  {reply, ok, [Check | State]};
+  {reply, {ok, Check}, [Check | State]};
 
-handle_call({delete, Id}, _From, State) ->
-  NewState = lists:filter(fun(Check) -> Check#check.id =/= Id end, State),
-  {reply, ok, NewState};
+handle_call({delete, CheckId}, _From, State) ->
+  NewState = without(State, CheckId),
+  {reply, {ok, NewState}, NewState};
 
-handle_call({get, Id}, _From, State) ->
-  Check = lists:keyfind(Id, #check.id, State),
+handle_call({get, CheckId}, _From, State) ->
+  Check = lists:keyfind(CheckId, #check.id, State),
   Reply = case Check of
     false -> {not_found};
     Result -> {ok, Result}
   end,
   {reply, Reply, State};
+
+handle_call({update, NewCheck}, _From, State) ->
+  %% TODO: find something better
+  StateWithoutCheck = without(State, NewCheck#check.id),
+  {reply, {ok, NewCheck}, [NewCheck | StateWithoutCheck]};
 
 handle_call({get_all}, _From, State) ->
   {reply, {ok, State}, State};
@@ -84,3 +98,5 @@ code_change(_OldVsn, State, _Extra) ->
 %% Internal Function Definitions
 %% ------------------------------------------------------------------
 
+without(State, CheckId) ->
+  lists:filter(fun(Check) -> Check#check.id =/= CheckId end, State).

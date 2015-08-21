@@ -1,11 +1,12 @@
+-record(metric, {
+  timestamp,
+  result = {ok}
+}).
+
 -record(check, {
   id,
   type = tcp,
   port,
-  interval = 5000
-}).
--record(metric, {
-  check = #check{},
-  timestamp,
-  result = {ok}
+  interval = 5000,
+  metrics = []
 }).
