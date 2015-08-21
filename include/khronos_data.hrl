@@ -3,7 +3,7 @@
   result = {ok}
 }).
 
--record(check, {
+-record(target, {
   id,
   type = tcp,
   port,

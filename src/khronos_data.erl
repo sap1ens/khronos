@@ -9,7 +9,7 @@
 %% API Function Exports
 %% ------------------------------------------------------------------
 
--export([start_link/0, stop/0, create_check/4, delete_check/1, get_check/1, get_all_checks/0, add_metric/3]).
+-export([start_link/0, stop/0, create_target/4, delete_target/1, get_target/1, get_all_targets/0, add_metric/3]).
 
 %% ------------------------------------------------------------------
 %% gen_server Function Exports
@@ -27,27 +27,27 @@ start_link() ->
 stop() ->
   gen_server:call(?SERVER, stop).
 
-create_check(Id, Type, Port, Interval) ->
-  NewCheck = #check{id = Id, type = Type, port = Port, interval = Interval},
-  gen_server:call(?SERVER, {add, NewCheck}).
+create_target(Id, Type, Port, Interval) ->
+  NewTarget = #target{id = Id, type = Type, port = Port, interval = Interval},
+  gen_server:call(?SERVER, {add, NewTarget}).
 
-delete_check(Id) ->
+delete_target(Id) ->
   gen_server:call(?SERVER, {delete, Id}).
 
-get_check(Id) ->
+get_target(Id) ->
   gen_server:call(?SERVER, {get, Id}).
 
-get_all_checks() ->
+get_all_targets() ->
   gen_server:call(?SERVER, {get_all}).
 
-add_metric(CheckId, Timestamp, Result) ->
-  {ok, Check} = get_check(CheckId),
+add_metric(TargetId, Timestamp, Result) ->
+  {ok, Target} = get_target(TargetId),
 
-  ExistingMetrics = Check#check.metrics,
+  ExistingMetrics = Target#target.metrics,
   NewMetric = #metric{timestamp = Timestamp, result = Result},
-  NewCheck = Check#check{metrics = [NewMetric | ExistingMetrics]},
+  NewTarget = Target#target{metrics = [NewMetric | ExistingMetrics]},
 
-  gen_server:call(?SERVER, {update, NewCheck}).
+  gen_server:call(?SERVER, {update, NewTarget}).
 
 %% ------------------------------------------------------------------
 %% gen_server Function Definitions
@@ -56,25 +56,25 @@ add_metric(CheckId, Timestamp, Result) ->
 init(_) ->
   {ok, []}.
 
-handle_call({add, Check}, _From, State) ->
-  {reply, {ok, Check}, [Check | State]};
+handle_call({add, Target}, _From, State) ->
+  {reply, {ok, Target}, [Target | State]};
 
-handle_call({delete, CheckId}, _From, State) ->
-  NewState = without(State, CheckId),
+handle_call({delete, TargetId}, _From, State) ->
+  NewState = without(State, TargetId),
   {reply, {ok, NewState}, NewState};
 
-handle_call({get, CheckId}, _From, State) ->
-  Check = lists:keyfind(CheckId, #check.id, State),
-  Reply = case Check of
+handle_call({get, TargetId}, _From, State) ->
+  Target = lists:keyfind(TargetId, #target.id, State),
+  Reply = case Target of
     false -> {not_found};
     Result -> {ok, Result}
   end,
   {reply, Reply, State};
 
-handle_call({update, NewCheck}, _From, State) ->
+handle_call({update, NewTarget}, _From, State) ->
   %% TODO: find something better
-  StateWithoutCheck = without(State, NewCheck#check.id),
-  {reply, {ok, NewCheck}, [NewCheck | StateWithoutCheck]};
+  StateWithoutTarget = without(State, NewTarget#target.id),
+  {reply, {ok, NewTarget}, [NewTarget | StateWithoutTarget]};
 
 handle_call({get_all}, _From, State) ->
   {reply, {ok, State}, State};
@@ -98,5 +98,5 @@ code_change(_OldVsn, State, _Extra) ->
 %% Internal Function Definitions
 %% ------------------------------------------------------------------
 
-without(State, CheckId) ->
-  lists:filter(fun(Check) -> Check#check.id =/= CheckId end, State).
+without(State, TargetId) ->
+  lists:filter(fun(Target) -> Target#target.id =/= TargetId end, State).
