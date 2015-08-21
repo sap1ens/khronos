@@ -21,15 +21,15 @@ stop(_) ->
   khronos_data:stop().
 
 create_target(_) ->
-  {ok, _} = khronos_data:create_target(1, tcp, 80, 1000),
+  {ok, _} = khronos_data:create_target(1, tcp, 80, {127, 0, 0, 1}, 1000),
   {ok, Target} = khronos_data:get_target(1),
 
   ?_assertMatch(#target{id = 1, type = tcp, port = 80, interval = 1000}, Target).
 
 delete_target(_) ->
   CreateTwoTargets = fun() ->
-    {ok, _} = khronos_data:create_target(2, tcp, 80, 1000),
-    {ok, _} = khronos_data:create_target(3, udp, 8080, 5000),
+    {ok, _} = khronos_data:create_target(2, tcp, 80, {127, 0, 0, 1}, 1000),
+    {ok, _} = khronos_data:create_target(3, udp, 8080, {127, 0, 0, 1}, 5000),
     {ok, Target} = khronos_data:get_all_targets(),
     Target
   end,
@@ -46,7 +46,7 @@ add_metric(_) ->
   Now = now(),
 
   AddMetric = fun() ->
-    {ok, _} = khronos_data:create_target(1, tcp, 80, 1000),
+    {ok, _} = khronos_data:create_target(1, tcp, 80, {127, 0, 0, 1}, 1000),
     {ok, TargetWithMetric} = khronos_data:add_metric(1, Now, {ok}),
     TargetWithMetric#target.metrics
   end,
@@ -55,7 +55,7 @@ add_metric(_) ->
 
 add_metric_increment(_) ->
   CreateTargetWithEmptyMetrics = fun() ->
-    {ok, Target} = khronos_data:create_target(1, tcp, 80, 1000),
+    {ok, Target} = khronos_data:create_target(1, tcp, 80, {127, 0, 0, 1}, 1000),
     Target#target.metrics
   end,
 
