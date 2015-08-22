@@ -28,12 +28,13 @@ stop() ->
   gen_server:call(?SERVER, stop).
 
 %% TODO: move to handle_cast
+%% TODO: close socket?
 call_tcp(TargetId) ->
   {ok, Target} = khronos_data:get_target(TargetId),
 
   {ok, IP} = inet:getaddr(Target#target.address, inet),
   Result = case gen_tcp:connect(IP, Target#target.port, [binary, {active, true}], Target#target.timeout) of
-    {ok, _} -> {ok};
+    {ok, _Socket} -> {ok};
     {error, Msg} -> {failed, Msg} %% Example: {error, timeout}
   end,
 
