@@ -9,5 +9,6 @@
   port,
   address,
   interval = 5000,
+  timeout = 5000,
   metrics = []
 }).

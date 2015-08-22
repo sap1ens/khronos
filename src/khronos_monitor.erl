@@ -9,7 +9,7 @@
 %% API Function Exports
 %% ------------------------------------------------------------------
 
--export([start_link/0, stop/0, call_udp/1]).
+-export([start_link/0, stop/0, call_tcp/1]).
 
 %% ------------------------------------------------------------------
 %% gen_server Function Exports
@@ -28,14 +28,13 @@ stop() ->
   gen_server:call(?SERVER, stop).
 
 %% TODO: move to handle_cast
-%% TODO: implement timeout
-call_udp(TargetId) ->
+call_tcp(TargetId) ->
   {ok, Target} = khronos_data:get_target(TargetId),
 
   {ok, IP} = inet:getaddr(Target#target.address, inet),
-  Result = case gen_udp:open(Target#target.port, [{ip, IP}]) of
+  Result = case gen_tcp:connect(IP, Target#target.port, [binary, {active, true}], Target#target.timeout) of
     {ok, _} -> {ok};
-    {error, Msg} -> {failed, Msg} %% Example: {error, eaddrnotavail}
+    {error, Msg} -> {failed, Msg} %% Example: {error, timeout}
   end,
 
   khronos_data:add_metric(TargetId, now(), Result),

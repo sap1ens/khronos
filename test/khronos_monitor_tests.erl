@@ -7,7 +7,7 @@
 
 khronos_monitor_test_() ->
   [
-    {"It should call UDP ports targets", ?setup(fun udp_call/1)}
+    {"It should call UDP ports targets", ?setup(fun tcp_call/1)}
   ].
 
 start() ->
@@ -19,11 +19,11 @@ stop(_) ->
   khronos_data:stop(),
   khronos_monitor:stop().
 
-udp_call(_) ->
-  {ok, _} = khronos_data:create_target(1, udp, 8888, "google.com", 1000),
+tcp_call(_) ->
+  {ok, _} = khronos_data:create_target(1, tcp, 8871, "google.com", 1000),
 
-  khronos_monitor:call_udp(1),
+  khronos_monitor:call_tcp(1),
 
   {ok, Target} = khronos_data:get_target(1),
 
-  ?_assertMatch([#metric{result = {failed, eaddrnotavail}}], Target#target.metrics).
+  ?_assertMatch([#metric{result = {failed, timeout}}], Target#target.metrics).
