@@ -7,7 +7,7 @@
 
 khronos_monitor_test_() ->
   [
-    {"It should call UDP ports targets", ?setup(fun tcp_call/1)}
+    {"It should call TCP ports targets", ?setup(fun tcp_call/1)}
   ].
 
 start() ->
@@ -22,7 +22,10 @@ stop(_) ->
 tcp_call(_) ->
   {ok, _} = khronos_data:create_target(1, tcp, 8871, "google.com", 1000),
 
-  khronos_monitor:call_tcp(1),
+  khronos_monitor:check_tcp(1),
+
+  %% should be bigger than timeout
+  timer:sleep(6000),
 
   {ok, Target} = khronos_data:get_target(1),
 
