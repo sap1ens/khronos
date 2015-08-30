@@ -29,7 +29,7 @@ create_target(_) ->
 delete_target(_) ->
   CreateTwoTargets = fun() ->
     {ok, _} = khronos_data:create_target(2, tcp, 80, {127, 0, 0, 1}, 1000),
-    {ok, _} = khronos_data:create_target(3, udp, 8080, {127, 0, 0, 1}, 5000),
+    {ok, _} = khronos_data:create_target(3, tcp, 8080, {127, 0, 0, 1}, 5000),
     {ok, Target} = khronos_data:get_all_targets(),
     Target
   end,
