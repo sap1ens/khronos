@@ -9,7 +9,7 @@
 %% API Function Exports
 %% ------------------------------------------------------------------
 
--export([start_link/0, stop/0, create_target/4, delete_target/1, get_target/1, get_all_targets/0, add_metric/3]).
+-export([start_link/0, stop/0, create_target/5, delete_target/1, get_target/1, get_all_targets/0, add_metric/3]).
 
 %% ------------------------------------------------------------------
 %% gen_server Function Exports
@@ -27,8 +27,8 @@ start_link() ->
 stop() ->
   gen_server:call(?SERVER, stop).
 
-create_target(Id, Type, Port, Interval) ->
-  NewTarget = #target{id = Id, type = Type, port = Port, interval = Interval},
+create_target(Id, Type, Port, Address, Interval) ->
+  NewTarget = #target{id = Id, type = Type, port = Port, address = Address, interval = Interval},
   gen_server:call(?SERVER, {add, NewTarget}).
 
 delete_target(Id) ->
