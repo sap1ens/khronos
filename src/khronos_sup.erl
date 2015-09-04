@@ -31,9 +31,9 @@ start_link() ->
 %%             /     \
 %%      monitor_1   monitor_2
 init([]) ->
-  Api = ?CHILD(khronos_api, worker),
+%%   Api = ?CHILD(khronos_api, worker),
   Data = ?CHILD(khronos_data, worker),
   MonitorSup = ?CHILD(khronos_monitor_sup, supervisor),
 
-  {ok, { {one_for_one, 5, 60}, [Api, Data, MonitorSup]} }.
+  {ok, { {one_for_one, 5, 60}, [Data, MonitorSup]} }.
 
