@@ -28,6 +28,8 @@ stop() ->
   gen_server:call(?SERVER, stop).
 
 check_tcp(TargetId) ->
+  lager:info("Checking tcp for target with id ~s", [TargetId]),
+
   gen_server:cast(?SERVER, {check_tcp, TargetId}).
 
 %% ------------------------------------------------------------------
@@ -48,8 +50,13 @@ handle_cast({check_tcp, TargetId}, State) ->
   Result = case gen_tcp:connect(IP, Target#target.port, [binary, {active, true}], Target#target.timeout) of
     {ok, Socket} ->
       gen_tcp:close(Socket),
+
+      lager:info("Check for target with id ~s succeeded", [TargetId]),
+
       {ok};
     {error, Msg} ->
+      lager:info("Check for target with id ~s failed", [TargetId]),
+
       {failed, Msg} %% Example: {error, timeout} or {error, econnrefused}
   end,
 

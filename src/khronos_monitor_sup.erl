@@ -22,7 +22,7 @@ start_link() ->
 %% ===================================================================
 
 init([]) ->
-  ExampleMonitor = ?CHILD(khronos_monitor, worker),
+  Monitor = ?CHILD(khronos_monitor, worker),
 
-  {ok, { {one_for_one, 5, 60}, [ExampleMonitor]} }.
+  {ok, { {one_for_one, 5, 60}, [Monitor]} }.
 

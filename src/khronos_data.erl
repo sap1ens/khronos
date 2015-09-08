@@ -29,15 +29,24 @@ stop() ->
 
 create_target(Id, Type, Port, Address, Interval) ->
   NewTarget = #target{id = Id, type = Type, port = Port, address = Address, interval = Interval},
+
+  lager:info("Creating new target ~p", [NewTarget]),
+
   gen_server:call(?SERVER, {add, NewTarget}).
 
 delete_target(Id) ->
+  lager:info("Deleting target with id ~s", [Id]),
+
   gen_server:call(?SERVER, {delete, Id}).
 
 get_target(Id) ->
+  lager:info("Returning target with id ~s", [Id]),
+
   gen_server:call(?SERVER, {get, Id}).
 
 get_all_targets() ->
+  lager:info("Returning all targets", []),
+
   gen_server:call(?SERVER, {get_all}).
 
 add_metric(TargetId, Timestamp, Result) ->
@@ -45,6 +54,9 @@ add_metric(TargetId, Timestamp, Result) ->
 
   ExistingMetrics = Target#target.metrics,
   NewMetric = #metric{timestamp = Timestamp, result = Result},
+
+  lager:info("Adding new metric ~p for target with id ~s", [NewMetric, TargetId]),
+
   NewTarget = Target#target{metrics = [NewMetric | ExistingMetrics]},
 
   gen_server:call(?SERVER, {update, NewTarget}).
