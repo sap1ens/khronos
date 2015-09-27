@@ -13,3 +13,14 @@ In Future:
 - Multi-node setup
 - Riak persistence
 - More target types including webhooks
+
+## Little demo
+
+```
+$ ./run.sh
+rr(khronos_data).
+{ok, _} = khronos_data:create_target(1, tcp, 8871, "google.com", 10000).
+{ok, Target} = khronos_data:get_target(1).
+khronos_data:get_all_targets().
+khronos_sup:schedule_check(Target).
+```

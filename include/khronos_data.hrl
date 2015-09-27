@@ -8,7 +8,7 @@
   type = tcp,
   port,
   address,
-  interval = 5000,
+  interval = 30000,
   timeout = 5000,
   metrics = []
 }).
