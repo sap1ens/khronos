@@ -35,12 +35,12 @@ schedule_check(Target) ->
 %%                |
 %%               sup
 %%          /     |     \
-%%  api_server  data  monitor_sup (gen_tracker)
-%%      |            /     \
-%%     api       monitor_1   monitor_2
+%%        api   data   monitor_sup (gen_tracker)
+%%                         /     \
+%%                   monitor_1   monitor_2
 %%
 init([]) ->
-  Api = ?CHILD(khronos_api_server, worker),
+  Api = ?CHILD(khronos_api, worker),
   Data = ?CHILD(khronos_data, worker),
   MonitorSup = {khronos_monitor_sup, {gen_tracker, start_link, [khronos_monitor_sup]}, permanent, infinity, supervisor, []},
 
